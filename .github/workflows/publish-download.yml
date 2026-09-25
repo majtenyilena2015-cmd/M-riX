@@ -1,0 +1,28 @@
+name: Publish MáriX download
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "MariX-Windows.zip"
+      - ".github/workflows/publish-download.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download repository files
+        uses: actions/checkout@v4
+      - name: Publish Windows ZIP
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v1.0.0"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" MariX-Windows.zip --clobber
+          else
+            gh release create "$TAG" MariX-Windows.zip --title "MáriX Windows" --notes "A teljes MáriX játék Windowsra. Csomagold ki, majd nyisd meg a game.html fájlt Chrome vagy Edge böngészőben." --latest
+          fi
