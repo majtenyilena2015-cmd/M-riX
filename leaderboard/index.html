@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0b1020">
   <title>MáriX — közös ranglista</title>
   <style>
-    :root{color-scheme:dark;--bg:#0b1020;--panel:#141c34;--line:#293550;--muted:#aab7cf;--cyan:#67e8f9;--gold:#fcd34d}
+    :root{color-scheme:dark;--bg:#0b1020;--line:#293550;--muted:#aab7cf;--cyan:#67e8f9;--gold:#fcd34d}
     *{box-sizing:border-box}
     body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 0,#1c3150,var(--bg) 60%);color:#f8fafc;font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;padding:32px 16px}
     main{max-width:760px;margin:auto}
@@ -76,25 +76,16 @@
           row.append(rank, name, level);
           fragment.append(row);
         });
-        results.replaceWith(fragment);
+        results.className = '';
+        results.replaceChildren(fragment);
       } catch {
+        results.className = 'status';
         results.textContent = 'A ranglista most nem érhető el. Próbáld újra később.';
       } finally {
         refresh.disabled = false;
       }
     }
-    refresh.addEventListener('click', () => {
-      const old = document.querySelector('.board .status');
-      if (!old) {
-        const status = document.createElement('div');
-        status.id = 'results';
-        status.className = 'status';
-        status.setAttribute('role', 'status');
-        status.setAttribute('aria-live', 'polite');
-        document.querySelector('.board').append(status);
-      }
-      loadBoard();
-    });
+    refresh.addEventListener('click', loadBoard);
     loadBoard();
   </script>
 </body>
