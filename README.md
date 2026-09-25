@@ -2,8 +2,13 @@
 
 Platformjáték 30 pályával, gyűjthető szilánkokkal, kulcsos ládákkal és 14 skinnel.
 
-## Indítás Windows alatt
+## Letöltés Windowsra
 
-Töltsd le a [MariX-Windows.zip](MariX-Windows.zip) fájlt, csomagold ki, majd nyisd meg a `game.html` fájlt Chrome vagy Edge böngészőben.
+[**MáriX letöltése (Windows ZIP)**](https://github.com/majtenyilena2015-cmd/M-riX/releases/latest/download/MariX-Windows.zip)
 
-A játék neve **MáriX**. A GitHub címében a repo neve `M-riX` alakban szerepel.
+Töltsd le és csomagold ki a ZIP-et, majd nyisd meg a `game.html` fájlt Chrome vagy Edge böngészőben.
+
+## Böngészős játék
+
+Nyisd meg a [játékot](https://majtenyilena2015-cmd.github.io/M-riX/).
+
