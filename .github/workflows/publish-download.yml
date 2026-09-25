@@ -1,9 +1,11 @@
-name: Publish MáriX download
+name: Publish MáriX Windows download
 
 on:
   push:
     branches: [main]
     paths:
+      - "game.html"
+      - "launcher.py"
       - "MariX-Windows.zip"
       - ".github/workflows/publish-download.yml"
 
@@ -12,17 +14,26 @@ permissions:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
-      - name: Download repository files
+      - name: Checkout game
         uses: actions/checkout@v4
-      - name: Publish Windows ZIP
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build Windows executable
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyinstaller pywebview
+          pyinstaller --noconfirm --clean --onefile --windowed --name MariX --add-data "game.html;." launcher.py
+      - name: Publish downloadable files
         env:
           GH_TOKEN: ${{ github.token }}
+        shell: pwsh
         run: |
-          TAG="v1.0.0"
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" MariX-Windows.zip --clobber
-          else
-            gh release create "$TAG" MariX-Windows.zip --title "MáriX Windows" --notes "A teljes MáriX játék Windowsra. Csomagold ki, majd nyisd meg a game.html fájlt Chrome vagy Edge böngészőben." --latest
-          fi
+          $tag = "v1.0.0"
+          $notes = "MáriX Windows alkalmazás. Töltsd le és indítsd el a MariX.exe fájlt. A ZIP csomag külön is elérhető."
+          gh release view $tag | Out-Null
+          gh release upload $tag dist/MariX.exe MariX-Windows.zip --clobber
+          gh release edit $tag --title "MáriX Windows" --notes $notes
