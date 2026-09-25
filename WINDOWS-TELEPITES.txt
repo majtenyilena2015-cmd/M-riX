@@ -1,0 +1,10 @@
+MáriX – indítás Windows alatt
+
+1. Csomagold ki a ZIP fájlt egy mappába.
+2. Nyisd meg a game.html fájlt Chrome vagy Microsoft Edge böngészőben.
+3. Mozgás: A/D vagy nyilak; ugrás: Space; X-lökés: X vagy Shift.
+   P: shop, Esc: szünet, R: újrakezdés.
+
+A játék internetkapcsolat nélkül is működik. A haladás és a skinek
+ugyanabban a böngészőben, helyben mentődnek. A fájl helyének vagy a
+böngésző adatainak törlése a mentést elveszítheti.
