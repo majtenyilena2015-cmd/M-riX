@@ -4,7 +4,7 @@ Platformjáték 30 pályával, gyűjthető szilánkokkal, kulcsos ládákkal és
 
 ## Közös ranglista
 
-[**MáriX ranglista megnyitása**](https://marix-ranglista.majtenyi-lena2015.chatgpt.site)
+[**MáriX ranglista megnyitása**](https://majtenyilena2015-cmd.github.io/M-riX/)
 
 A játékban válassz becenevet; az elért legmagasabb pálya megjelenik a nyilvános ranglistán. Ne használj teljes valódi nevet.
 
