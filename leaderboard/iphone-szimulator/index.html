@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101221">
+  <title>iPhone szimulátor – Visual Studio Code projekt</title>
+  <style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color-scheme:dark;font-synthesis:none;text-rendering:optimizeLegibility}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;}body{background:#0b0c16;color:white;overflow-x:hidden}
+button,input,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #aab8ff;outline-offset:2px}button:disabled{cursor:default;opacity:.5}
+.workspace{min-height:100vh;display:flex;align-items:center;justify-content:center;gap:clamp(48px,8vw,155px);padding:42px 40px;position:relative;overflow:hidden;background:radial-gradient(ellipse 650px 580px at 78% 47%,#27264a80,transparent 80%),radial-gradient(ellipse 430px 410px at 6% 7%,#1b356d43,transparent 90%),#0b0d19}
+.workspace:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.13;background-image:linear-gradient(#7080a022 1px,transparent 1px),linear-gradient(90deg,#7080a022 1px,transparent 1px);background-size:54px 54px;mask-image:linear-gradient(to right,#000,transparent 85%)}
+.intro{max-width:480px;z-index:1}.eyebrow{font-size:11px;font-weight:800;letter-spacing:.24em;color:#b9a9ff;display:flex;gap:10px;align-items:center}.live-dot,.under-dot{background:#a87cff;width:8px;height:8px;border-radius:50%;display:inline-block;box-shadow:0 0 13px #a87cff}
+h1{font-size:clamp(38px,4.1vw,65px);letter-spacing:-.065em;line-height:1.09;margin:23px 0 21px;font-weight:800}h1 span{background:linear-gradient(115deg,#9faeff,#db9ffb 70%,#fab5d6);background-clip:text;color:transparent}.intro>p{font-size:16px;line-height:1.85;color:#aab1c8;max-width:440px}
+.feature-list{display:grid;grid-template-columns:1fr 1fr;gap:17px 24px;margin-top:36px;font-size:13px;color:#d7dbed}.feature-list>div{display:flex;align-items:center;gap:10px}.feature-icon{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:9px;background:#b19cff21;color:#b7a9ff}
+.desktop-hint{color:#858ba4;font-size:12px;margin-top:45px}.desktop-hint kbd{padding:5px 8px;background:#21243a;border:1px solid #41435d;border-radius:6px;color:#d2d6ef;font-size:11px}.desktop-hint span{margin:0 6px}
+.phone-area{z-index:1;display:flex;flex-direction:column;align-items:center;position:relative;flex-shrink:0;animation:deviceFloat 6s ease-in-out infinite}.phone-shadow{position:absolute;width:310px;height:100px;top:92%;border-radius:50%;background:#a17dff35;filter:blur(55px);pointer-events:none;animation:shadowPulse 6s ease-in-out infinite}
+.iphone{--scale:1;width:360px;height:746px;border-radius:59px;padding:9px;position:relative;isolation:isolate;background:linear-gradient(125deg,#9da3b5,#2b2d3c 20%,#10121e 44%,#6b7185 65%,#13131d 78%,#a8acba);box-shadow:0 0 0 2px #535466,0 0 0 4px #171823,22px 27px 80px #0009,inset 0 0 6px 3px #1b1c26;transform:scale(var(--scale));transform-origin:center;transition:transform .35s ease,box-shadow .35s ease}
+.glass{background:#070914;height:100%;width:100%;border-radius:51px;position:relative;overflow:hidden;isolation:isolate;box-shadow:inset 0 0 0 2px #070813}
+.hardware-button{position:absolute;background:linear-gradient(#a0a3b2,#353646,#9297a7);border:0;width:4px;z-index:-1;padding:0}.power{right:-6px;top:165px;height:100px;border-radius:0 3px 3px 0}.volume-up,.volume-down{left:-6px;height:53px;border-radius:3px 0 0 3px}.volume-up{top:161px}.volume-down{top:224px}
+.wallpaper{position:absolute;inset:0;overflow:hidden;background:linear-gradient(152deg,#101b45 0%,#2c246d 38%,#754fa0 67%,#d57b88 100%);transition:background .5s}.wallpaper.ocean{background:linear-gradient(150deg,#032b4e,#0664a0 42%,#12a9ad 68%,#a1eadc)}.wallpaper.dusk{background:linear-gradient(155deg,#2a0f29,#7a2b54 36%,#d96062 66%,#efa66c)}.wallpaper-glow{position:absolute;border-radius:48%;filter:blur(7px);opacity:.95;transform:rotate(-25deg);pointer-events:none}.glow-one{width:440px;height:410px;top:180px;left:65px;background:radial-gradient(ellipse at 24% 50%,#ffaab1 0%,#a481f3 31%,#705ad3 55%,transparent 71%)}.glow-two{width:390px;height:220px;top:415px;left:-125px;transform:rotate(21deg);background:radial-gradient(ellipse,#6f8af6 0%,#364bbb 45%,transparent 74%)}.glow-three{width:260px;height:320px;top:15px;right:-140px;background:radial-gradient(ellipse,#8795fd64,transparent 75%)}.ocean .glow-one{background:radial-gradient(ellipse,#8de5dc,#35ace4 34%,#1768cf 65%,transparent 75%)}.ocean .glow-two{background:radial-gradient(ellipse,#015cb4,#12356b 54%,transparent 76%)}.dusk .glow-one{background:radial-gradient(ellipse,#ffd7a0,#f48b8b 40%,#ae4a86 66%,transparent 75%)}.dusk .glow-two{background:radial-gradient(ellipse,#ad4c8d,#643071 54%,transparent 76%)}
+.island{position:absolute;z-index:20;top:12px;left:50%;transform:translateX(-50%);width:112px;height:31px;border-radius:22px;background:#050609;display:flex;align-items:center;justify-content:flex-end;padding:0 13px;pointer-events:none}.island-lens{width:11px;height:11px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#183a67,#070b16 70%);border:2px solid #14171d}
+.statusbar{height:53px;display:flex;justify-content:space-between;align-items:flex-start;padding:17px 26px 0 27px;position:absolute;top:0;left:0;right:0;color:white;z-index:19;font-size:14px;font-weight:700;text-shadow:0 1px 3px #2224;pointer-events:none}.status-icons{display:flex;gap:5px;align-items:center;border:0;background:transparent;color:inherit;padding:0;pointer-events:auto}.battery{width:23px;height:12px;border:1.5px solid currentColor;border-radius:4px;display:inline-flex;padding:2px;position:relative}.battery:after{content:"";position:absolute;right:-4px;top:3px;width:2px;height:4px;background:currentColor;border-radius:0 2px 2px 0}.battery-fill{background:#fff;border-radius:1px;width:80%;height:100%}
+.screen-view{position:absolute;inset:0;z-index:5;overflow:hidden}.home-indicator{position:absolute;z-index:30;width:126px;height:24px;padding:0;left:50%;bottom:0;transform:translateX(-50%);background:transparent;border:0;display:grid;place-items:center}.home-indicator span{width:112px;height:5px;border-radius:9px;background:white;box-shadow:0 0 2px #0003}.home-indicator.on-light span{background:#23232b}
+.off-screen{position:absolute;inset:0;z-index:40;background:#030304;display:grid;place-items:center;cursor:pointer}.off-tap{font-size:12px;color:#777;opacity:0;transition:opacity .3s}.off-screen:hover .off-tap{opacity:1}.hidden{display:none!important}
+.toast{z-index:50;position:absolute;top:61px;left:50%;transform:translate(-50%,-15px);background:#232536e9;border:1px solid #ffffff38;color:white;border-radius:20px;padding:10px 17px;font-size:12px;max-width:85%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;opacity:0;transition:opacity .2s,transform .2s;box-shadow:0 8px 25px #0003}.toast.show{opacity:1;transform:translate(-50%,0)}
+.under-phone{font-weight:800;font-size:10px;letter-spacing:.23em;color:#c4bdde;margin-top:27px;display:flex;align-items:center;gap:9px}.under-dot{width:6px;height:6px}
+/* lock / home */
+.lock-view{position:absolute;inset:0;color:white;text-align:center;touch-action:pan-y;cursor:pointer}.lock-date{position:absolute;top:120px;left:0;right:0;font-size:17px;font-weight:500;text-transform:capitalize}.lock-clock{position:absolute;top:140px;left:0;right:0;font-size:83px;font-weight:650;letter-spacing:-.08em;line-height:1.15}.lock-icon{position:absolute;top:85px;left:0;right:0;font-size:20px}.lock-bottom{position:absolute;left:0;right:0;bottom:40px;display:flex;align-items:center;justify-content:space-around}.lock-circle{width:48px;height:48px;display:grid;place-items:center;background:#17182f70;backdrop-filter:blur(12px);border-radius:50%;font-size:22px}.unlock-hint{position:absolute;bottom:98px;left:0;right:0;font-size:12px;color:#fffdf0;animation:float 2s infinite}.unlock-chevron{font-size:22px;line-height:18px}@keyframes float{50%{transform:translateY(-5px)}}
+.home-view{position:absolute;inset:0;padding:70px 20px 23px;display:flex;flex-direction:column}.widget-row{display:flex;gap:13px;align-items:stretch}.mini-widget{height:135px;border-radius:24px;backdrop-filter:blur(30px);background:#ffffff29;border:1px solid #ffffff2d;flex:1;padding:16px;box-shadow:inset 0 1px 0 #fff2}.mini-weather{display:flex;flex-direction:column;justify-content:space-between}.mini-weather .temp{font-size:42px;letter-spacing:-.07em;line-height:1}.mini-weather small,.mini-date small{display:block;font-size:11px;opacity:.85}.mini-weather .sun{font-size:23px;float:right}.mini-date{display:flex;align-items:flex-start;flex-direction:column;justify-content:space-between}.mini-date .big-date{font-size:39px;letter-spacing:-.04em;font-weight:650}.mini-date .big-week{font-size:14px}.app-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px 10px;margin-top:26px}.app-cell{border:0;padding:0;background:transparent;color:white;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}.app-icon{display:grid;place-items:center;width:58px;height:58px;border-radius:15px;box-shadow:0 4px 12px #0003,inset 0 1px 1px #fff6;position:relative;overflow:hidden}.app-icon svg{width:32px;height:32px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.8}.app-icon--messages{background:#40d85f}.app-icon--notes{background:linear-gradient(#ffdb43 0 31%,white 31%);color:#a4a5b4}.app-icon--notes svg{margin-top:12px}.app-icon--calculator{background:#212126}.app-icon--photos{background:#fff;color:#e06985}.app-icon--camera{background:#a9aeb8;color:#333943}.app-icon--weather{background:linear-gradient(#218df2,#6bbaff)}.app-icon--clock{background:white;color:#1a1a21}.app-icon--settings{background:linear-gradient(135deg,#92959d,#545962)}.app-icon--safari{background:linear-gradient(140deg,#37b9fa,#0866d1)}.app-icon--phone{background:#36d461}.app-icon--music{background:linear-gradient(135deg,#f363ab,#d73875)}.app-label{font-size:10px;text-align:center;text-shadow:0 1px 6px #0008;white-space:nowrap;max-width:75px;overflow:hidden;text-overflow:ellipsis}.home-dock{display:flex;justify-content:space-around;align-items:center;background:#ffffff3b;backdrop-filter:blur(25px);border-radius:27px;margin-top:auto;padding:13px 6px 12px}.home-dock .app-icon{width:57px;height:57px}.page-dots{position:absolute;bottom:105px;left:0;right:0;display:flex;justify-content:center;gap:7px}.page-dots span{background:#ffffff7d;width:6px;height:6px;border-radius:50%}.page-dots span:first-child{background:white}
+/* common app */
+.app-page{position:absolute;inset:0;background:#f6f7fa;color:#161923;padding:58px 0 30px;display:flex;flex-direction:column}.app-page.dark{background:#0c0d12;color:#f4f4f8}.app-head{padding:0 22px 13px;flex:0 0 auto}.app-head .overline{font-size:12px;color:#84899b}.app-head h2{font-size:30px;letter-spacing:-.045em;margin:4px 0 0}.app-topline{display:flex;justify-content:space-between;align-items:center;min-height:35px}.plain-button{border:0;background:transparent;padding:5px;color:#1379f7;font-size:15px;font-weight:600}.round-action{border:none;border-radius:50%;background:#e5edff;color:#1379f7;width:37px;height:37px;font-size:25px;display:grid;place-items:center}.scroll-content{overflow-y:auto;flex:1;min-height:0;overscroll-behavior:contain;scrollbar-width:none}.scroll-content::-webkit-scrollbar{display:none}.muted{color:#8b909e}.line{height:1px;background:#e7e9ef;margin:0 22px}.empty-state{text-align:center;color:#8a91a2;padding:60px 28px;font-size:13px;line-height:1.7}.pill{padding:6px 12px;background:#eaecf1;border-radius:18px;color:#626b7b;font-size:11px;display:inline-block}.fake-disclaimer{font-size:10px;color:#8d94a3;line-height:1.5}
+/* notes */
+.note-list-item{padding:14px 22px;display:flex;align-items:center;gap:10px;background:transparent;border:0;border-bottom:1px solid #e8e9ef;width:100%;text-align:left;color:inherit}.note-list-item span{display:block;flex:1;min-width:0}.note-list-item strong{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.note-list-item small{display:block;font-size:12px;color:#8e94a3;margin-top:4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.note-edit{display:flex;flex-direction:column;height:100%;padding:9px 21px 13px}.note-title{font-size:25px;font-weight:700;letter-spacing:-.03em;border:0;background:transparent;color:inherit;outline:none;width:100%;padding:14px 0 10px}.note-body{resize:none;width:100%;flex:1;min-height:0;outline:none;border:0;background:transparent;color:inherit;font-size:16px;line-height:1.65}.note-bottom{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #e0e2e7;padding-top:8px}
+/* messages */
+.contact-item{padding:14px 22px;width:100%;border:0;background:transparent;display:flex;align-items:center;text-align:left;gap:12px;border-bottom:1px solid #e9eaf0;color:inherit}.avatar{width:51px;height:51px;border-radius:50%;background:linear-gradient(130deg,#876cf4,#e3a5bb);display:grid;place-items:center;color:white;font-size:19px;font-weight:700;flex-shrink:0}.avatar.blue{background:linear-gradient(130deg,#369bdc,#7ed9d8)}.contact-info{min-width:0;flex:1}.contact-info strong,.contact-info small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.contact-info strong{font-size:15px}.contact-info small{margin-top:4px;color:#838a97;font-size:12px}.thread{padding:15px 16px;display:flex;flex-direction:column;gap:9px}.bubble{max-width:80%;padding:11px 13px;border-radius:18px 18px 18px 5px;align-self:flex-start;background:#e8e8ee;font-size:14px;line-height:1.45;overflow-wrap:anywhere}.bubble.me{align-self:flex-end;background:#2287ff;color:white;border-radius:18px 18px 5px 18px}.message-form{display:flex;gap:7px;align-items:center;padding:11px 14px;background:#fff;border-top:1px solid #eaecf2}.message-form input{min-width:0;flex:1;border:1px solid #d9dde5;background:#f8f9fb;border-radius:25px;padding:11px 13px;color:#171923;font-size:14px}.send-btn{border:none;background:#1683fb;border-radius:50%;color:white;width:35px;height:35px;font-size:20px;flex-shrink:0}
+/* calculator */
+.calculator{background:#08090c;color:white;justify-content:flex-end;padding:85px 17px 39px}.calc-display{height:145px;display:flex;align-items:flex-end;justify-content:flex-end;padding:0 10px 14px;font-weight:300;font-size:68px;letter-spacing:-.06em;overflow:hidden;white-space:nowrap}.calc-buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.calc-button{border:0;border-radius:50%;aspect-ratio:1;background:#303135;color:white;font-size:28px;font-weight:400;padding:0;transition:filter .15s}.calc-button:active{filter:brightness(1.5)}.calc-button.utility{background:#a5a6ad;color:#101014}.calc-button.operation{background:#ff9d1b;color:white}.calc-button.zero{grid-column:span 2;aspect-ratio:auto;border-radius:55px;text-align:left;padding-left:27px}
+/* photos */
+.photo-grid{padding:11px 6px;display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.photo-tile{aspect-ratio:1;background-size:cover;background-position:center;border:none;padding:0;position:relative}.photo-art-1{background:radial-gradient(ellipse at 78% 20%,#ffe6a0,transparent 35%),linear-gradient(145deg,#5844bb,#b64b9f 57%,#ff9e7c)}.photo-art-2{background:radial-gradient(ellipse at 22% 80%,#00b4cf,transparent 33%),linear-gradient(165deg,#11356a,#4479bb 55%,#9be3df)}.photo-art-3{background:radial-gradient(circle at 50% 45%,#ffdc97 0 12%,transparent 13%),linear-gradient(180deg,#fc9b81,#b46599 65%,#4d477b 66%)}.photo-art-4{background:repeating-linear-gradient(35deg,transparent 0 36px,#ffffff24 36px 37px),linear-gradient(145deg,#143a5c,#479d88,#f6d889)}.photo-art-5{background:radial-gradient(ellipse at 55% 20%,#d4b4ee,transparent 30%),linear-gradient(150deg,#342b75,#895cb9 60%,#f09bc0)}.photo-art-6{background:linear-gradient(150deg,#123a48,#317879 50%,#a5c7b4)}.photo-full{height:100%;display:flex;flex-direction:column;align-items:stretch}.photo-big{flex:1;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#0b0b10}.photo-full .app-topline{padding:3px 20px 11px}
+/* camera */
+.camera-app{background:#080a0c;color:white;padding:61px 12px 33px}.camera-preview{flex:1;min-height:0;border-radius:20px;overflow:hidden;position:relative;background:linear-gradient(145deg,#314767,#c16d84 55%,#fcaf7f);display:flex;align-items:center;justify-content:center}.camera-preview video{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}.camera-fallback{width:100%;height:100%;position:absolute;inset:0;overflow:hidden}.camera-fallback:before{content:"";position:absolute;width:290px;height:290px;top:13%;left:23%;border-radius:50%;background:linear-gradient(#fff3d9,#e8c0ff);filter:blur(8px);opacity:.76}.camera-fallback:after{content:"";position:absolute;bottom:-17%;left:-20%;width:145%;height:62%;background:linear-gradient(125deg,#513e86,#202c69);transform:rotate(-16deg);border-radius:50%}.camera-fallback .camera-label{z-index:2;position:absolute;bottom:20px;left:0;right:0;text-align:center;font-size:11px;color:#fffd;text-shadow:0 1px 3px #000}.camera-controls{padding:21px 8px 7px;display:flex;align-items:center;justify-content:space-around}.shutter{border:4px solid white;background:white;box-shadow:inset 0 0 0 3px #080a0c;width:67px;height:67px;border-radius:50%}.camera-thumb{width:44px;height:44px;border-radius:10px;border:1px solid #ddd6;background:#314668;background-size:cover}.camera-fine{font-size:10px;color:#bdc1c9;text-align:center;min-height:25px}
+/* weather */
+.weather-app{color:white;background:linear-gradient(180deg,#327fc7,#71bae3 54%,#afd8ed);text-align:center}.weather-main{padding:36px 20px 10px}.weather-city{font-size:28px;font-weight:500}.weather-temp{font-size:99px;font-weight:200;letter-spacing:-.09em;line-height:1.17}.weather-condition{font-size:16px}.forecast-card{margin:23px 18px;background:#ffffff36;border:1px solid #ffffff36;border-radius:19px;padding:18px 13px;text-align:left;backdrop-filter:blur(16px)}.forecast-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;text-align:center;margin-top:16px}.forecast-grid>div{display:flex;flex-direction:column;gap:12px;font-size:13px}.weather-fine{padding:0 25px;color:#ffffffce;font-size:11px;line-height:1.55}
+/* clock */
+.clock-face{margin:32px auto 22px;width:220px;height:220px;border-radius:50%;background:repeating-conic-gradient(#777a8d 0deg 1deg,transparent 1deg 6deg);border:8px solid #25262d;display:grid;place-items:center;position:relative}.clock-face:after{content:"";width:204px;height:204px;border-radius:50%;background:#16171f;position:absolute}.clock-digital{position:relative;z-index:2;font-size:37px;font-weight:300;letter-spacing:-.05em}.stopwatch-display{text-align:center;font-size:47px;font-variant-numeric:tabular-nums;font-weight:300;letter-spacing:-.04em;margin:22px 0}.stopwatch-controls{display:flex;justify-content:space-around;margin:0 20px}.watch-btn{height:65px;width:65px;border:0;border-radius:50%;background:#272934;color:white}.watch-btn.start{background:#123b2b;color:#42e38e}.watch-btn.stop{background:#421f25;color:#fa747f}
+/* phone */
+.dial-number{min-height:100px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:400;letter-spacing:2px}.dial-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:13px 21px;width:255px;margin:0 auto}.dial-key{background:#e9e9ed;border:none;border-radius:50%;aspect-ratio:1;font-size:29px;color:#111}.dial-key small{font-size:9px;display:block;letter-spacing:2px}.call-footer{display:flex;gap:30px;align-items:center;justify-content:center;margin:19px 0}.call-button{background:#3edc69;border:none;color:white;border-radius:50%;width:67px;height:67px;font-size:29px}.call-button.hangup{background:#f34c57}.call-overlay{text-align:center;display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+/* browser */
+.browser-search{display:flex;margin:12px 18px 22px;background:#e8ebf1;border-radius:13px;padding:7px;gap:7px}.browser-search input{min-width:0;flex:1;background:transparent;border:0;color:#1d2631;padding:5px;outline:none;font-size:14px}.browser-search button{background:#147cf2;color:white;border:0;border-radius:9px;padding:6px 12px;font-size:12px}.bookmark-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px 8px;padding:0 16px}.bookmark{border:0;background:transparent;color:inherit;text-align:center;font-size:11px}.bookmark-icon{margin:auto auto 8px;border-radius:15px;background:#fff;box-shadow:0 2px 10px #0001;width:58px;height:58px;display:grid;place-items:center;font-weight:800;font-size:23px;color:#2684c7}
+/* settings */
+.setting-section{font-size:12px;color:#9397a3;text-transform:uppercase;margin:17px 20px 7px}.setting-card{background:#fff;margin:0 13px;border-radius:16px;overflow:hidden}.setting-row{padding:13px 15px;min-height:52px;display:flex;gap:11px;align-items:center;border-bottom:1px solid #eceef2;font-size:14px}.setting-row:last-child{border-bottom:none}.setting-row label{flex:1}.setting-row select{border:0;background:#f1f2f5;border-radius:9px;padding:7px 8px;color:#252c35;font-size:12px}.switch{width:45px;height:27px;border-radius:30px;background:#ced2dc;border:0;padding:3px;display:flex;justify-content:flex-start;transition:background .2s}.switch:after{content:"";width:21px;height:21px;border-radius:50%;background:white;box-shadow:0 1px 3px #0003;transition:transform .2s}.switch.active{background:#36cd68}.switch.active:after{transform:translateX(18px)}.wallpaper-swatches{display:flex;gap:12px}.swatch{border-radius:50%;width:33px;height:33px;border:3px solid white;box-shadow:0 0 0 1px #d4d6e1}.swatch.selected{box-shadow:0 0 0 2px #2b85fb}.swatch.solar{background:linear-gradient(135deg,#262269,#d386b9)}.swatch.ocean{background:linear-gradient(135deg,#003a7b,#33d4b0)}.swatch.dusk{background:linear-gradient(135deg,#7b2f64,#f79c75)}
+.control-screen{position:absolute;inset:0;background:#202439da;backdrop-filter:blur(35px);padding:83px 20px 65px;color:white}.control-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.control-card{background:#ffffff23;border:1px solid #ffffff20;border-radius:22px;padding:15px;min-height:130px}.control-card h3{font-size:13px;margin:6px 0}.control-toggles{display:flex;gap:9px;margin-bottom:10px}.control-toggles button{border:0;border-radius:50%;width:41px;height:41px;background:#656677;color:white;font-size:20px}.control-toggles button.active{background:#277bff}.control-slider{width:100%;accent-color:white}.control-close{margin-top:22px;background:#ffffff29;border:0;border-radius:14px;padding:14px;width:100%;color:white}
+@media(max-width:920px){.workspace{gap:28px;padding:30px 14px;flex-direction:column}.intro{text-align:center}.intro .eyebrow{justify-content:center}.intro>p{margin-left:auto;margin-right:auto}.feature-list{margin-top:22px}.desktop-hint{margin-top:23px}.phone-area{margin-top:13px}}@media(max-width:420px){.intro{padding:0 12px}.intro>p{font-size:14px}.feature-list{font-size:11px;gap:12px}.phone-area{width:100%}.iphone{--scale:.90;margin-top:-32px;margin-bottom:-37px}.under-phone{margin-top:16px}}@media(max-width:340px){.iphone{--scale:.80;margin-top:-70px;margin-bottom:-78px}}@media(max-height:780px) and (min-width:921px){.iphone{--scale:.84;margin:-65px -29px}.workspace{min-height:100vh}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+/* Optional dark appearance for standard apps */
+.sim-dark .app-page:not(.dark):not(.calculator):not(.camera-app):not(.weather-app){background:#171820;color:#f2f3f8}
+.sim-dark .app-page:not(.dark) .note-list-item,.sim-dark .app-page:not(.dark) .contact-item{border-color:#32343d}
+.sim-dark .app-page:not(.dark) .note-body,.sim-dark .app-page:not(.dark) .note-title{color:#fff}
+.sim-dark .app-page:not(.dark) .setting-card,.sim-dark .app-page:not(.dark) .message-form{background:#272932;color:#fff}
+.sim-dark .app-page:not(.dark) .setting-row{border-color:#3b3d45}
+.sim-dark .app-page:not(.dark) .bubble:not(.me){background:#3b3c48}
+.sim-dark .app-page:not(.dark) .line{background:#353743}
+.sim-dark .app-page:not(.dark) .browser-search{background:#30323e;color:#fff}
+.sim-dark .app-page:not(.dark) .browser-search input{color:#fff}
+.sim-dark .app-page:not(.dark) .dial-key{background:#343641;color:white}
+.sim-dark .app-page:not(.dark) .message-form input{background:#393b47;color:white;border-color:#5c6070}
+.sim-dark .app-page:not(.dark) .setting-row select{background:#444650;color:white}
+
+.lock-circle svg,.call-button svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.8}
+
+
+/* animációs finomítások */
+.screen-view{perspective:1200px}
+.screen-view>div.animate-home{animation:homeEnter .48s cubic-bezier(.2,.9,.23,1)}
+.screen-view>div.animate-app{animation:appEnter .38s cubic-bezier(.2,.9,.23,1)}
+.screen-view>div.animate-lock{animation:lockEnter .44s ease}
+.screen-view>div.animate-control{animation:controlEnter .32s cubic-bezier(.2,.8,.22,1)}
+.app-grid .app-cell,.home-dock .app-cell{transition:transform .18s ease,filter .18s ease;animation:iconRise .45s both;animation-delay:calc(var(--app-order,0) * 42ms)}
+.app-grid .app-cell:nth-child(n),.home-dock .app-cell:nth-child(n){opacity:0}
+.app-grid .app-cell .app-icon,.home-dock .app-cell .app-icon{transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
+.app-grid .app-cell:hover .app-icon,.home-dock .app-cell:hover .app-icon,.app-grid .app-cell:active .app-icon,.home-dock .app-cell:active .app-icon{transform:translateY(-4px) scale(1.05);box-shadow:0 12px 24px #0005,inset 0 1px 1px #fff7;filter:saturate(1.1)}
+.app-grid .app-cell:active,.home-dock .app-cell:active{transform:scale(.98)}
+.app-icon::after{content:"";position:absolute;inset:-55% 48% auto auto;width:68%;height:180%;transform:rotate(25deg);background:linear-gradient(90deg,transparent,#ffffff75,transparent);opacity:.46;pointer-events:none;animation:iconShimmer 5.5s linear infinite}
+.mini-widget,.home-dock{animation:softFadeUp .55s both}
+.page-dots span{animation:dotPulse 2.4s ease-in-out infinite}
+.page-dots span:last-child{animation-delay:.3s}
+.app-page,.lock-view,.control-screen,.home-view{will-change:transform,opacity}
+.toast{transition:opacity .24s,transform .24s,filter .24s;filter:blur(4px)}
+.toast.show{filter:blur(0)}
+.wallpaper-glow{animation:glowDrift 14s ease-in-out infinite}
+.glow-two{animation-duration:17s}
+.glow-three{animation-duration:20s}
+#screen.screen-wake::after,#screen.screen-sleep::after{content:"";position:absolute;inset:0;z-index:60;pointer-events:none;background:radial-gradient(circle at 50% 45%,#ffffff2f,transparent 60%),linear-gradient(180deg,#ffffff60,transparent 40%);animation:screenFlash .45s ease}
+#screen.screen-sleep::after{background:linear-gradient(180deg,#0000,#0008 60%,#000c),radial-gradient(circle at 50% 45%,#ffffff12,transparent 55%)}
+#iphone.pressed{transform:scale(calc(var(--scale) * .992))}
+.hardware-button{transition:transform .15s ease,filter .15s ease}
+.hardware-button:active{transform:scaleY(.96);filter:brightness(.9)}
+.control-card,.setting-card,.contact-item,.note-list-item,.browser-search,.camera-stage,.dial-key,.bookmark{transition:transform .18s ease,box-shadow .2s ease,background .2s ease}
+.control-card:hover,.setting-card:hover,.contact-item:hover,.note-list-item:hover,.bookmark:hover{transform:translateY(-2px)}
+.dial-key:active,.watch-btn:active,.call-button:active,.control-close:active,.round-action:active{transform:scale(.96)}
+
+@keyframes appEnter{0%{opacity:0;transform:translateY(18px) scale(.985)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes homeEnter{0%{opacity:0;transform:translateY(18px) scale(.98)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes lockEnter{0%{opacity:0;transform:scale(1.04)}100%{opacity:1;transform:scale(1)}}
+@keyframes controlEnter{0%{opacity:0;transform:translateY(30px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes iconRise{0%{opacity:0;transform:translateY(12px) scale(.92)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes softFadeUp{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes iconShimmer{0%,72%,100%{transform:translateX(0) rotate(25deg);opacity:0}78%{opacity:.55}92%{transform:translateX(-165%) rotate(25deg);opacity:0}}
+@keyframes dotPulse{50%{transform:scale(1.25);opacity:1}}
+@keyframes glowDrift{0%,100%{transform:translate3d(0,0,0) rotate(-25deg)}50%{transform:translate3d(10px,-10px,0) rotate(-18deg)}}
+@keyframes deviceFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes shadowPulse{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(.92);opacity:.55}}
+@keyframes screenFlash{0%{opacity:0}18%{opacity:1}100%{opacity:0}}
+
+@media (prefers-reduced-motion:reduce){
+  .phone-area,.phone-shadow,.wallpaper-glow,.app-grid .app-cell,.home-dock .app-cell,.mini-widget,.home-dock,.page-dots span{animation:none!important}
+  .screen-view>div,.toast,.app-grid .app-cell,.home-dock .app-cell,.app-icon,.control-card,.setting-card,.contact-item,.note-list-item,.browser-search,.camera-stage,.dial-key,.bookmark{transition:none!important}
+}
+
+</style>
+  <script defer>
+/*
+  iPhone-szimulátor – böngészős demó.
+  Nem valódi iOS: hívás, SMS és időjárás csak bemutató;
+  jegyzetek, fényképek és beállítások a böngésző helyi tárába kerülnek.
+*/
+(() => {
+  'use strict';
+
+  const $ = (sel) => document.querySelector(sel);
+  const view = $('#view');
+  const screen = $('#screen');
+  const phone = $('#iphone');
+  const toastBox = $('#toast');
+  const storageKey = 'iphone-vscode-hu-v1';
+
+  function loadSaved() {
+    try { return JSON.parse(localStorage.getItem(storageKey) || '{}') || {}; }
+    catch { return {}; }
+  }
+  const saved = loadSaved();
+  const defaultChats = {
+    anna: [{ from: 'them', text: 'Szia! 👋 Üdv az iPhone-demóban!' }, { from: 'them', text: 'Írj valamit, és próbáld ki az Üzenetek alkalmazást.' }],
+    mark: [{ from: 'them', text: 'Helló! 😎 Minden alkalmazást kipróbáltál már?' }]
+  };
+  const state = {
+    screenOn: true,
+    locked: true,
+    app: null,
+    previousApp: null,
+    control: false,
+    wallpaper: ['solar','ocean','dusk'].includes(saved.wallpaper) ? saved.wallpaper : 'solar',
+    dark: saved.dark === true,
+    wifi: saved.wifi !== false,
+    bluetooth: saved.bluetooth !== false,
+    brightness: Number.isFinite(Number(saved.brightness)) ? Math.max(35, Math.min(100, Number(saved.brightness))) : 100,
+    volume: 60,
+    notes: Array.isArray(saved.notes) ? saved.notes : [{ id: 1, title: 'Üdv az iPhone-odon! ✨', body: 'Ez egy működő böngészős iPhone-szimulátor.\n\nA jegyzeteidet automatikusan elmenti a böngésző.\n\nPróbáld ki a többi alkalmazást is!', edited: Date.now() }],
+    noteId: null,
+    chats: saved.chats && typeof saved.chats === 'object' ? saved.chats : defaultChats,
+    contact: null,
+    photos: Array.isArray(saved.photos) ? saved.photos : [],
+    currentPhoto: null,
+    dial: '', calling: false,
+    calcDisplay: '0', calcStored: null, calcOp: null, calcNew: false,
+    swElapsed: 0, swStart: 0, swRunning: false,
+    musicPlaying: false, musicTrack: 0,
+    cameraStream: null
+  };
+  const contacts = { anna: { name: 'Anna', initials: 'A', className: '' }, mark: { name: 'Márk', initials: 'M', className: 'blue' } };
+  const appDefs = {
+    messages: { label: 'Üzenetek', icon: 'message' },
+    notes: { label: 'Jegyzetek', icon: 'notes' },
+    calculator: { label: 'Számológép', icon: 'calculator' },
+    photos: { label: 'Fotók', icon: 'photos' },
+    camera: { label: 'Kamera', icon: 'camera' },
+    weather: { label: 'Időjárás', icon: 'weather' },
+    clock: { label: 'Óra', icon: 'clock' },
+    settings: { label: 'Beállítások', icon: 'settings' },
+    safari: { label: 'Safari', icon: 'safari' },
+    phone: { label: 'Telefon', icon: 'phone' },
+    music: { label: 'Zene', icon: 'music' }
+  };
+  const paths = {
+    message: '<path d="M20.5 11.2c0 4.7-4.1 8.1-9.2 8.1-1.6 0-3-.3-4.4-.9L3 20l1.1-3.7C2.7 14.9 2 13.2 2 11.2 2 6.7 6.1 3 11.3 3s9.2 3.7 9.2 8.2Z"/>',
+    notes: '<path d="M6 6h12M6 11h12M6 16h9"/>',
+    calculator: '<path d="M7 3v7M3.5 6.5h7M14 6.5h7M14 15h7M14 19h7"/>',
+    photos: '<circle cx="12" cy="12" r="2"/><path d="M12 10C6 3 11 1 13 4c2-4 7-1 3 5 6-2 8 3 3 5 4 4 0 8-4 5-1 5-6 5-6 0-4 3-8-1-4-5-5-2-3-7 3-5"/>',
+    camera: '<rect x="2" y="6" width="20" height="15" rx="3"/><path d="M8 6l1.5-2h5L16 6"/><circle cx="12" cy="13.5" r="4"/>',
+    weather: '<circle cx="9" cy="8" r="3"/><path d="M9 2v2M2.5 8h2M4.5 3.5l1.5 1.5M15 8a5 5 0 0 1 0 10H7.5a4 4 0 0 1 0-8H9a6 6 0 0 1 6-2Z"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 3"/>',
+    settings: '<circle cx="12" cy="12" r="3"/><path d="m10 2-.6 2.3-2 1-2.2-1L3.1 7.6l1.8 1.6-.2 2.3L2.6 13l1.6 3.7 2.4-.4 1.8 1.5L8.5 20h4l.6-2.3 2-1 2.2 1 2.1-3.3-1.8-1.6.2-2.3L20 9l-1.6-3.7-2.4.4-1.8-1.5L14 2Z" transform="translate(1 1) scale(.92)"/>',
+    safari: '<circle cx="12" cy="12" r="9"/><path d="m15.9 7.8-2.2 5.8-5.6 2.6 2.3-5.9z"/>',
+    phone: '<path d="M5.3 3.1 8.6 7l-1.7 2.1a15 15 0 0 0 8 8l2.1-1.7 3.9 3.3-1.9 2.4C12.1 21.7 2.3 11.9 2.9 5Z"/>',
+    music: '<path d="M10 18V5l11-2v13M10 7l11-2"/><circle cx="7" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'
+  };
+  function svg(name) { return `<svg viewBox="0 0 24 24" aria-hidden="true">${paths[name] || paths.safari}</svg>`; }
+  function esc(v) { return String(v ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+  const timeText = () => new Intl.DateTimeFormat('hu-HU',{hour:'2-digit',minute:'2-digit'}).format(new Date());
+  const dateText = () => new Intl.DateTimeFormat('hu-HU',{month:'long',day:'numeric',weekday:'long'}).format(new Date());
+  function save() {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify({
+        wallpaper:state.wallpaper,dark:state.dark,wifi:state.wifi,bluetooth:state.bluetooth,
+        brightness:state.brightness,notes:state.notes,chats:state.chats,photos:state.photos
+      }));
+    } catch(err) { toast('A tárhely megtelt. Törölj néhány fotót.'); }
+  }
+  let toastTimer;
+  function toast(message) {
+    toastBox.textContent = message;
+    toastBox.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastBox.classList.remove('show'), 2800);
+  }
+  function setWallpaper(){ $('#wallpaper').className = 'wallpaper ' + state.wallpaper; }
+  function setBrightness(){ screen.style.setProperty('--dim', String(1 - state.brightness/100)); }
+  function flashScreen(mode='wake'){screen.classList.remove('screen-wake','screen-sleep');void screen.offsetWidth;screen.classList.add(mode==='sleep'?'screen-sleep':'screen-wake');setTimeout(()=>screen.classList.remove('screen-wake','screen-sleep'),460);}
+  function pressPhone(){phone.classList.add('pressed');setTimeout(()=>phone.classList.remove('pressed'),160);}
+  function iconButton(app,order=0){const a=appDefs[app];return `<button class="app-cell" data-app="${app}" title="${a.label}" style="--app-order:${order}"><span class="app-icon app-icon--${app}">${svg(a.icon)}</span><span class="app-label">${a.label}</span></button>`;}
+  function goHome() {
+    stopCamera();
+    stopMusic();
+    state.control=false;state.app=null;state.contact=null;state.noteId=null;state.currentPhoto=null;state.calling=false;
+    state.locked=false; render();
+  }
+  function lockPhone(){stopCamera();stopMusic();state.control=false;state.app=null;state.locked=true;flashScreen('sleep');state.screenOn=false;render();}
+  function openApp(app) {
+    if (!appDefs[app]) return;
+    if (state.app==='camera' && app!=='camera')stopCamera();
+    if (state.app==='music' && app!=='music')stopMusic();
+    state.previousApp=state.app;
+    state.screenOn=true;state.locked=false;state.control=false;state.app=app;
+    state.contact=null;state.noteId=null;state.currentPhoto=null;state.calling=false;
+    render();
+    if(app==='camera')startCamera();
+  }
+  function render() {
+    $('#offScreen').classList.toggle('hidden',state.screenOn);
+    $('#homeButton').classList.toggle('on-light',Boolean(state.app && !['calculator','camera','weather','clock','music'].includes(state.app)));
+    setWallpaper();
+    $('#iphone').classList.toggle('sim-dark',state.dark);
+    if (!state.screenOn){view.innerHTML='';return;}
+    if (state.control){view.innerHTML=controlHTML();applyViewAnimation('control');return;}
+    if(state.locked){view.innerHTML=lockHTML();applyViewAnimation('lock');updateClock();return;}
+    view.innerHTML = state.app ? appHTML(state.app) : homeHTML();
+    applyViewAnimation(state.app ? 'app' : 'home');
+    updateClock();
+    if(state.app==='messages' && state.contact) { const t=$('.scroll-content.thread-scroll'); if(t)t.scrollTop=t.scrollHeight; }
+  }
+  function applyViewAnimation(type){const first=view.firstElementChild;if(!first)return;first.classList.add('animate-'+type);}
+  function updateClock() {
+    $('#statusTime').textContent=timeText();
+    const lockClock=$('#lockClock');if(lockClock)lockClock.textContent=timeText();
+    const date=$('#lockDate');if(date)date.textContent=dateText();
+    const liveClock=$('#liveClock');if(liveClock)liveClock.textContent=timeText();
+    const stopwatch=$('#stopwatchDisplay');if(stopwatch)stopwatch.textContent=fmtStopwatch(getElapsed());
+    const currentDay=$('#homeDay');if(currentDay)currentDay.textContent=new Date().getDate();
+  }
+  function lockHTML(){return `<div class="lock-view" id="lockView" role="button" tabindex="0" aria-label="Feloldás, érintsd meg vagy húzd felfelé"><div class="lock-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div><div class="lock-date" id="lockDate">${dateText()}</div><div class="lock-clock" id="lockClock">${timeText()}</div><div class="unlock-hint"><div class="unlock-chevron">⌃</div>Húzd felfelé a feloldáshoz</div><div class="lock-bottom"><button class="lock-circle" data-action="flashlight" aria-label="Zseblámpa demó">ϟ</button><button class="lock-circle" data-action="lock-camera" aria-label="Kamera megnyitása">${svg('camera')}</button></div></div>`;}
+  function homeHTML(){const topApps=['messages','notes','calculator','photos','camera','weather','clock','settings'];const dockApps=['phone','safari','music','messages'];return `<div class="home-view"><div class="widget-row"><div class="mini-widget mini-weather" data-app="weather" role="button" tabindex="0"><div><small>Budapest · demó</small><span class="sun">☀️</span></div><div><div class="temp">22°</div><small>Derült · mintaadat</small></div></div><div class="mini-widget mini-date" data-app="clock" role="button" tabindex="0"><div><small>MA</small><div class="big-week">${new Intl.DateTimeFormat('hu-HU',{weekday:'long'}).format(new Date())}</div></div><div class="big-date" id="homeDay">${new Date().getDate()}</div></div></div><div class="app-grid">${topApps.map((app,index)=>iconButton(app,index)).join('')}</div><div class="page-dots"><span></span><span></span></div><div class="home-dock">${dockApps.map((app,index)=>iconButton(app,index+topApps.length)).join('')}</div></div>`;}
+  function header(title,subtitle='',right=''){return `<div class="app-head"><div class="app-topline"><button class="plain-button" data-action="home">‹ Főképernyő</button>${right}</div>${subtitle?`<div class="overline">${subtitle}</div>`:''}<h2>${title}</h2></div>`;}
+  function appHTML(app){switch(app){
+    case 'notes':return notesHTML();case 'messages':return messagesHTML();case 'calculator':return calculatorHTML();
+    case 'photos':return photosHTML();case 'camera':return cameraHTML();case 'weather':return weatherHTML();
+    case 'clock':return clockHTML();case 'settings':return settingsHTML();case 'safari':return safariHTML();
+    case 'phone':return phoneHTML();case 'music':return musicHTML();default:return homeHTML();
+  }}
+
+  /* JEGYZETEK */
+  function notesHTML(){
+    if(state.noteId!==null){const n=state.notes.find(n=>n.id===state.noteId);if(!n){state.noteId=null;return notesHTML();}
+      return `<div class="app-page">${header('Jegyzet szerkesztése','','<button class="plain-button" data-action="notes-back">Kész</button>')}<div class="note-edit"><input class="note-title" id="noteTitle" placeholder="Cím" maxlength="100" value="${esc(n.title)}" aria-label="Jegyzet címe"><textarea id="noteBody" class="note-body" placeholder="Írj ide..." aria-label="Jegyzet szövege">${esc(n.body)}</textarea><div class="note-bottom"><small class="muted">Automatikusan mentve</small><button class="plain-button" data-action="delete-note">Törlés</button></div></div></div>`;
+    }
+    return `<div class="app-page">${header('Jegyzetek', `${state.notes.length} jegyzet`,'<button class="round-action" data-action="new-note" title="Új jegyzet">+</button>')}<div class="scroll-content">${state.notes.length?state.notes.slice().sort((a,b)=>b.edited-a.edited).map(n=>`<button class="note-list-item" data-note="${n.id}"><span><strong>${esc(n.title||'Névtelen jegyzet')}</strong><small>${esc((n.body||'Üres jegyzet').replace(/\s+/g,' ').slice(0,80))}</small></span><span class="muted">›</span></button>`).join(''):'<div class="empty-state">Még nincs jegyzeted.<br>Nyomd meg a + gombot!</div>'}</div></div>`;
+  }
+  function createNote(){const id=Date.now();state.notes.push({id,title:'',body:'',edited:id});state.noteId=id;save();render();$('#noteTitle')?.focus();}
+  function saveNote(){const n=state.notes.find(n=>n.id===state.noteId);if(!n)return;n.title=$('#noteTitle')?.value||'';n.body=$('#noteBody')?.value||'';n.edited=Date.now();save();}
+
+  /* ÜZENETEK – csak helyi demó */
+  function messagesHTML(){
+    if(state.contact){const p=contacts[state.contact],msgs=state.chats[state.contact]||[];
+      return `<div class="app-page"><div class="app-head"><div class="app-topline"><button class="plain-button" data-action="chat-back">‹ Üzenetek</button><span class="pill">Demóbeszélgetés</span></div><div style="text-align:center"><span class="avatar ${p.className}" style="margin:0 auto 5px;width:44px;height:44px">${p.initials}</span><b>${p.name}</b></div></div><div class="scroll-content thread-scroll"><div class="thread">${msgs.map(m=>`<div class="bubble ${m.from==='me'?'me':''}">${esc(m.text)}</div>`).join('')}</div></div><form class="message-form" id="messageForm"><input id="messageInput" placeholder="Üzenet (csak demó)" autocomplete="off" maxlength="500" aria-label="Üzenet szövege" required><button class="send-btn" title="Küldés" aria-label="Demóüzenet küldése">↑</button></form></div>`;
+    }
+    return `<div class="app-page">${header('Üzenetek','Beszélgetések')}<div class="scroll-content">${Object.entries(contacts).map(([id,c])=>{let m=(state.chats[id]||[]).at(-1);return `<button class="contact-item" data-contact="${id}"><span class="avatar ${c.className}">${c.initials}</span><span class="contact-info"><strong>${c.name}</strong><small>${esc(m?.text||'Kezdj beszélgetést!')}</small></span><span class="muted">›</span></button>`}).join('')}<p class="fake-disclaimer" style="padding:13px 22px">Ezek helyi demóüzenetek. Nem küld valódi SMS-t.</p></div></div>`;
+  }
+  function sendMessage(){const input=$('#messageInput');const value=input?.value.trim();if(!value||!state.contact)return;(state.chats[state.contact]??=[]).push({from:'me',text:value});save();render();$('#messageInput')?.focus();}
+
+  /* SZÁMOLÓGÉP */
+  function calculatorHTML(){const keys=[['AC','utility'],['±','utility'],['%','utility'],['÷','operation'],['7',''],['8',''],['9',''],['×','operation'],['4',''],['5',''],['6',''],['−','operation'],['1',''],['2',''],['3',''],['+','operation'],['0','zero'],[',',''],['=','operation']];return `<div class="app-page calculator"><div class="calc-display" id="calcDisplay">${esc(state.calcDisplay)}</div><div class="calc-buttons">${keys.map(([k,type])=>`<button class="calc-button ${type}" data-calc="${esc(k)}">${k}</button>`).join('')}</div></div>`;}
+  function calculate(a,op,b){switch(op){case '+':return a+b;case '−':return a-b;case '×':return a*b;case '÷':return b===0?NaN:a/b;default:return b;}}
+  function calcPress(k){let s=state;let current=s.calcDisplay.replace(',','.');
+    if(k==='AC'){s.calcDisplay='0';s.calcStored=null;s.calcOp=null;s.calcNew=false;}
+    else if(/[0-9]/.test(k)&&k.length===1){if(s.calcNew||s.calcDisplay==='0'||s.calcDisplay==='Hiba'){s.calcDisplay=k;s.calcNew=false;}else if(s.calcDisplay.replace(/\D/g,'').length<11)s.calcDisplay+=k;}
+    else if(k===','){if(s.calcNew||s.calcDisplay==='Hiba'){s.calcDisplay='0,';s.calcNew=false;}else if(!s.calcDisplay.includes(','))s.calcDisplay+=',';}
+    else if(k==='±'){if(Number(current)!==0)s.calcDisplay=s.calcDisplay.startsWith('-')?s.calcDisplay.slice(1):'-'+s.calcDisplay;}
+    else if(k==='%'){s.calcDisplay=fmtCalc(Number(current)/100);}
+    else if(['+','−','×','÷'].includes(k)){if(s.calcOp&&!s.calcNew){s.calcStored=calculate(s.calcStored,s.calcOp,Number(current));s.calcDisplay=fmtCalc(s.calcStored);}else s.calcStored=Number(current);s.calcOp=k;s.calcNew=true;}
+    else if(k==='='&&s.calcOp){s.calcDisplay=fmtCalc(calculate(s.calcStored,s.calcOp,Number(current)));s.calcStored=null;s.calcOp=null;s.calcNew=true;}
+    const d=$('#calcDisplay');if(d){d.textContent=s.calcDisplay;d.style.fontSize=s.calcDisplay.length>9?'43px':'68px';}
+  }
+  function fmtCalc(n){if(!Number.isFinite(n))return 'Hiba';return String(Number(n.toPrecision(10))).replace('.',',').slice(0,13);}
+
+  /* FOTÓK */
+  const demoPhotoClasses=['photo-art-1','photo-art-2','photo-art-3','photo-art-4','photo-art-5','photo-art-6'];
+  function photosHTML(){
+    if(state.currentPhoto!==null){const x=state.currentPhoto;const custom=x>=1000;const src=custom?state.photos[x-1000]?.src:null;
+      if(custom&&!src){state.currentPhoto=null;return photosHTML();}
+      return `<div class="app-page dark"><div class="photo-full"><div class="app-topline"><button class="plain-button" data-action="photos-back">‹ Fotók</button>${custom?`<button class="plain-button" data-action="delete-photo">Törlés</button>`:'<span class="fake-disclaimer">Mintakép</span>'}</div><div class="photo-big ${custom?'':demoPhotoClasses[x]}" ${custom?`style="background-image:url('${src}')"`:''}></div></div></div>`;
+    }
+    return `<div class="app-page">${header('Fotók',`${state.photos.length} saját kép · ${demoPhotoClasses.length} mintakép`)}<div class="scroll-content"><div class="photo-grid">${state.photos.map((p,i)=>`<button class="photo-tile" data-photo="${1000+i}" title="Saját kép ${i+1}" style="background-image:url('${p.src}')"></button>`).join('')}${demoPhotoClasses.map((cl,i)=>`<button class="photo-tile ${cl}" data-photo="${i}" title="Mintakép ${i+1}"></button>`).join('')}</div><p class="fake-disclaimer" style="padding:2px 14px">A saját fotók ebben a böngészőben tárolódnak.</p></div></div>`;
+  }
+
+  /* KAMERA */
+  function cameraHTML(){return `<div class="app-page camera-app"><div class="camera-preview" id="cameraPreview"><div class="camera-fallback" id="cameraFallback"><span class="camera-label">Kameranézet · hozzáférés nélkül demókép készül</span></div><video id="cameraVideo" autoplay muted playsinline hidden></video></div><div class="camera-controls"><button class="camera-thumb" data-action="open-photos" aria-label="Fotók megnyitása"></button><button class="shutter" data-action="shutter" title="Fénykép készítése" aria-label="Fénykép készítése"></button><button class="plain-button" data-action="camera-retry" style="color:white">↻</button></div><div class="camera-fine" id="cameraFine">Kameraengedéllyel valódi képet is készíthetsz (localhost/HTTPS).</div></div>`;}
+  async function startCamera(){
+    stopCamera();
+    if(!navigator.mediaDevices?.getUserMedia){setCameraMsg('Nincs kamera-hozzáférés: demókép készíthető.');return;}
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
+      if(state.app!=='camera'||!state.screenOn){stream.getTracks().forEach(t=>t.stop());return;}
+      state.cameraStream=stream;const video=$('#cameraVideo');if(video){video.srcObject=stream;video.hidden=false;$('#cameraFallback')?.classList.add('hidden');await video.play().catch(()=>{});} else stopCamera();
+      setCameraMsg('Élő kamera aktív · a fehér gombbal készíts fotót.');
+    }catch{setCameraMsg('Kamera nem érhető el: a gomb egy demóképet készít.');}
+  }
+  function setCameraMsg(s){const el=$('#cameraFine');if(el)el.textContent=s;}
+  function stopCamera(){if(state.cameraStream){state.cameraStream.getTracks().forEach(t=>t.stop());state.cameraStream=null;}const video=$('#cameraVideo');if(video)video.srcObject=null;}
+  function takePhoto(){
+    const canvas=document.createElement('canvas');canvas.width=270;canvas.height=360;const ctx=canvas.getContext('2d');const video=$('#cameraVideo');
+    let real=!!(state.cameraStream&&video&&video.readyState>=2&&video.videoWidth);
+    if(real){const scale=Math.max(canvas.width/video.videoWidth,canvas.height/video.videoHeight);let w=video.videoWidth*scale,h=video.videoHeight*scale;ctx.drawImage(video,(canvas.width-w)/2,(canvas.height-h)/2,w,h);}
+    else{
+      const g=ctx.createLinearGradient(0,0,270,360);g.addColorStop(0,'#424f94');g.addColorStop(.5,'#d67c9f');g.addColorStop(1,'#ffcf8b');ctx.fillStyle=g;ctx.fillRect(0,0,270,360);
+      ctx.fillStyle='#ffedcd';ctx.beginPath();ctx.arc(195,95,55,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#3c507c';ctx.beginPath();ctx.moveTo(0,260);ctx.lineTo(110,145);ctx.lineTo(225,295);ctx.lineTo(270,220);ctx.lineTo(270,360);ctx.lineTo(0,360);ctx.fill();
+      ctx.fillStyle='#203858';ctx.beginPath();ctx.moveTo(0,300);ctx.lineTo(82,235);ctx.lineTo(180,360);ctx.lineTo(0,360);ctx.fill();
+      ctx.fillStyle='#fff';ctx.font='12px sans-serif';ctx.fillText('DEMÓKÉP',13,25);
+    }
+    state.photos.unshift({src:canvas.toDataURL('image/jpeg',.70),date:Date.now()});
+    if(state.photos.length>14)state.photos=state.photos.slice(0,14);
+    save();const thumb=$('.camera-thumb');if(thumb)thumb.style.backgroundImage=`url('${state.photos[0].src}')`;
+    toast(real?'Fotó mentve a Fotókba!':'Demókép mentve a Fotókba!');
+  }
+
+  /* IDŐJÁRÁS – nem online */
+  function weatherHTML(){return `<div class="app-page weather-app"><div class="scroll-content"><div class="weather-main"><div class="weather-city">Budapest</div><div class="weather-temp">22°</div><div class="weather-condition">☀️ Derült</div><div>Maximum: 24° · Minimum: 15°</div></div><div class="forecast-card"><small>ÓRÁNKÉNTI MINTA-ELŐREJELZÉS</small><div class="forecast-grid">${[['Most','☀️','22°'],['14:00','🌤️','23°'],['16:00','☀️','24°'],['18:00','🌤️','20°']].map(x=>`<div><span>${x[0]}</span><span style="font-size:24px">${x[1]}</span><b>${x[2]}</b></div>`).join('')}</div></div><div class="forecast-card"><small>HÉTVÉGI MINTA</small><div style="display:flex;justify-content:space-between;padding-top:17px"><span>Szombat 🌤️</span><span>15° — 24°</span></div><div style="display:flex;justify-content:space-between;padding-top:15px"><span>Vasárnap ☀️</span><span>16° — 25°</span></div></div><div class="weather-fine">ℹ️ Az értékek kitalált mintaadatok, nem élő időjárás-jelentés.</div></div></div>`;}
+
+  /* ÓRA / STOPPER */
+  function getElapsed(){return state.swElapsed+(state.swRunning?Date.now()-state.swStart:0);}
+  function fmtStopwatch(ms){const t=Math.floor(ms/10);return `${String(Math.floor(t/6000)).padStart(2,'0')}:${String(Math.floor(t/100)%60).padStart(2,'0')}.${String(t%100).padStart(2,'0')}`;}
+  function clockHTML(){return `<div class="app-page dark"><div class="scroll-content">${header('Óra','Pontos helyi idő')}<div class="clock-face"><div class="clock-digital" id="liveClock">${timeText()}</div></div><div class="line" style="background:#343640"></div><div style="padding:20px 23px 0;color:#f4f4f8;font-size:18px">Stopperóra</div><div class="stopwatch-display" id="stopwatchDisplay">${fmtStopwatch(getElapsed())}</div><div class="stopwatch-controls"><button class="watch-btn" data-action="sw-reset">Nullázás</button><button class="watch-btn ${state.swRunning?'stop':'start'}" data-action="sw-toggle">${state.swRunning?'Megállít':'Indítás'}</button></div></div></div>`;}
+
+  /* BEÁLLÍTÁSOK */
+  function settingsHTML(){return `<div class="app-page">${header('Beállítások','Saját készülék')}<div class="scroll-content"><div class="setting-section">Megjelenés</div><div class="setting-card"><div class="setting-row"><label>Háttérkép</label><div class="wallpaper-swatches">${['solar','ocean','dusk'].map(w=>`<button class="swatch ${w} ${state.wallpaper===w?'selected':''}" data-wallpaper="${w}" title="${w} háttérkép" aria-label="${w} háttérkép"></button>`).join('')}</div></div><div class="setting-row"><label>Sötét app-megjelenés</label><button class="switch ${state.dark?'active':''}" data-toggle="dark" aria-label="Sötét megjelenés"></button></div><div class="setting-row"><label>Képernyő fényereje</label><input style="width:120px;accent-color:#1679f9" type="range" id="settingBrightness" min="35" max="100" value="${state.brightness}"></div></div><div class="setting-section">Kapcsolatok (vizuális demó)</div><div class="setting-card"><div class="setting-row"><label>Wi-Fi</label><button class="switch ${state.wifi?'active':''}" data-toggle="wifi" aria-label="Wi-Fi demó"></button></div><div class="setting-row"><label>Bluetooth</label><button class="switch ${state.bluetooth?'active':''}" data-toggle="bluetooth" aria-label="Bluetooth demó"></button></div></div><div class="setting-section">Készülék</div><div class="setting-card"><button class="setting-row" style="width:100%;border:none;background:transparent;text-align:left" data-action="lock"><label>Képernyő lezárása</label><span class="muted">›</span></button><button class="setting-row" style="width:100%;border:none;background:transparent;text-align:left;color:#ef465b" data-action="clear-data"><label>Demóadatok törlése</label><span>›</span></button></div><p class="fake-disclaimer" style="padding:15px 20px">Ez egy HTML/CSS/JavaScript projekt, nem valódi iOS. A Wi-Fi és Bluetooth kapcsolók csak látványelemek.</p></div></div>`;}
+
+  /* SAFARI – megnyit külső oldalakat */
+  function safariHTML(){return `<div class="app-page">${header('Safari','Böngésző parancsikonok')}<div class="scroll-content"><form class="browser-search" id="browserForm"><span>🔎</span><input id="browserInput" aria-label="Webcím vagy keresés" placeholder="Webcím vagy keresés" autocomplete="off" required><button>Ugrás</button></form><div class="setting-section" style="margin-bottom:20px">Kedvencek</div><div class="bookmark-grid">${[['Wikipedia','W','https://hu.wikipedia.org'],['YouTube','▶','https://www.youtube.com'],['OpenAI','✦','https://openai.com'],['Google','G','https://www.google.com'],['GitHub','⌘','https://github.com'],['MDN','M','https://developer.mozilla.org']].map(([name,letter,url])=>`<button class="bookmark" data-url="${url}"><span class="bookmark-icon">${letter}</span>${name}</button>`).join('')}</div><p class="fake-disclaimer" style="margin:30px 20px">A weboldalak a böngésző új lapján nyílnak meg.</p></div></div>`;}
+  function browse(value){const str=value.trim();if(!str)return;let url;if(/^https?:\/\//i.test(str))url=str;else if(/^[\w-]+(\.[\w-]+)+(:\d+)?(\/\S*)?$/.test(str))url='https://'+str;else url='https://duckduckgo.com/?q='+encodeURIComponent(str);window.open(url,'_blank','noopener,noreferrer');}
+
+  /* TELEFON – demóhívás */
+  function phoneHTML(){if(state.calling)return `<div class="app-page dark"><div class="call-overlay"><div class="avatar" style="width:90px;height:90px;font-size:36px">☎</div><div style="font-size:29px">${esc(state.dial)}</div><div class="muted">Demóhívás · nincs valódi kapcsolat</div><button class="call-button hangup" data-action="hangup" aria-label="Demóhívás befejezése">✕</button></div></div>`;
+    return `<div class="app-page"><div class="app-head"><h2 style="margin-top:4px">Telefon</h2><div class="overline">Tárcsázó · demó</div></div><div class="scroll-content" style="display:flex;flex-direction:column;justify-content:center"><div class="dial-number">${esc(state.dial)||'<span class="muted" style="font-size:18px;letter-spacing:0">Írj be egy számot</span>'}</div><div class="dial-pad">${[['1',''],['2','ABC'],['3','DEF'],['4','GHI'],['5','JKL'],['6','MNO'],['7','PQRS'],['8','TUV'],['9','WXYZ'],['*',''],['0','+'],['#','']].map(([number,letters])=>`<button class="dial-key" data-digit="${number}">${number}<small>${letters||'&nbsp;'}</small></button>`).join('')}</div><div class="call-footer"><button class="plain-button" data-action="erase-digit" aria-label="Számjegy törlése">⌫</button><button class="call-button" data-action="call" aria-label="Demóhívás indítása">${svg('phone')}</button><span style="width:32px"></span></div><p class="fake-disclaimer" style="text-align:center">Nem indít valódi telefonhívást.</p></div></div>`;
+  }
+
+  /* ZENE – valódi, helyben szintetizált egyszerű hangok */
+  const tracks=[{name:'Aurora',notes:[262,330,392,523,392,330,294,349]},{name:'Ocean',notes:[220,294,330,440,330,294,247,330]},{name:'Sunset',notes:[330,392,494,392,330,294,262,294]}];
+  let audioCtx=null,musicTimer=null,noteIndex=0;
+  function musicHTML(){const t=tracks[state.musicTrack];return `<div class="app-page dark"><div class="scroll-content" style="text-align:center">${header('Zene','Saját generált dallamok')}<div style="margin:55px auto 25px;width:215px;height:215px;border-radius:25px;background:radial-gradient(ellipse at 35% 25%,#f4c4f6,#9b5ce0 46%,#4a4d9e);box-shadow:0 20px 40px #a063de38;display:grid;place-items:center;font-size:85px">♫</div><div style="font-size:24px;font-weight:700">${t.name}</div><div class="muted" style="margin:7px 0 38px">Szintetizált demódallam</div><div style="display:flex;justify-content:center;align-items:center;gap:35px"><button class="plain-button" data-action="music-prev" style="font-size:30px;color:white">⏮</button><button class="watch-btn start" data-action="music-play" style="font-size:24px;width:70px;height:70px">${state.musicPlaying?'Ⅱ':'▶'}</button><button class="plain-button" data-action="music-next" style="font-size:30px;color:white">⏭</button></div><p class="fake-disclaimer" style="margin:35px 20px">A hangokat a böngésző állítja elő, nem valódi zeneszámok.</p></div></div>`;}
+  function playNote(f){if(!audioCtx)return;const now=audioCtx.currentTime;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.001,now);g.gain.exponentialRampToValueAtTime(.07,now+.04);g.gain.exponentialRampToValueAtTime(.001,now+.31);o.connect(g).connect(audioCtx.destination);o.start(now);o.stop(now+.33);}
+  function startMusic(){try{const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio){toast('A hang lejátszása nem támogatott.');return;}audioCtx ||= new Audio();audioCtx.resume();state.musicPlaying=true;clearInterval(musicTimer);noteIndex=0;playNote(tracks[state.musicTrack].notes[noteIndex++]);musicTimer=setInterval(()=>{if(state.musicPlaying)playNote(tracks[state.musicTrack].notes[(noteIndex++)%tracks[state.musicTrack].notes.length]);},400);render();}catch{toast('A hang nem indítható el.');}}
+  function stopMusic(){state.musicPlaying=false;clearInterval(musicTimer);musicTimer=null;}
+
+  /* VEZÉRLŐKÖZPONT */
+  function controlHTML(){return `<div class="control-screen"><div style="text-align:center;font-size:13px;margin-bottom:23px;color:#d5d6e5">Vezérlőközpont</div><div class="control-grid"><div class="control-card"><div class="control-toggles"><button data-toggle="wifi" class="${state.wifi?'active':''}" aria-label="Wi-Fi demó">⌁</button><button data-toggle="bluetooth" class="${state.bluetooth?'active':''}" aria-label="Bluetooth demó">ᛒ</button></div><h3>Kapcsolatok</h3><small>Vizuális demó</small></div><div class="control-card"><div style="font-size:24px">☀</div><h3>Fényerő</h3><input id="controlBrightness" class="control-slider" type="range" min="35" max="100" value="${state.brightness}" aria-label="Fényerő"></div><div class="control-card"><div style="font-size:24px">♫</div><h3>Hangerő: ${state.volume}%</h3><small>Oldalsó gombokkal is</small></div><div class="control-card"><button data-action="lock" style="height:100%;width:100%;border:0;background:transparent;color:white"><div style="font-size:27px">⌑</div><h3>Zárolás</h3></button></div></div><button class="control-close" data-action="control-close">Kész</button></div>`;}
+
+  /* ESEMÉNYEK */
+  document.addEventListener('click',(ev)=>{
+    if(ev.target.closest('#powerButton')){pressPhone();if(state.screenOn)lockPhone();else{state.screenOn=true;state.locked=true;render();flashScreen('wake');}return;}
+    if(ev.target.closest('#volumeUp')){pressPhone();state.volume=Math.min(100,state.volume+10);toast(`Hangerő: ${state.volume}%`);return;}
+    if(ev.target.closest('#volumeDown')){pressPhone();state.volume=Math.max(0,state.volume-10);toast(`Hangerő: ${state.volume}%`);return;}
+    if(ev.target.closest('#offScreen')){state.screenOn=true;state.locked=true;render();flashScreen('wake');return;}
+    if(!state.screenOn)return;
+    if(ev.target.closest('#homeButton')){goHome();return;}
+    if(ev.target.closest('#controlOpen')){state.control=!state.control;render();return;}
+    const urlBtn=ev.target.closest('[data-url]');if(urlBtn){browse(urlBtn.dataset.url);return;}
+    const appBtn=ev.target.closest('[data-app]');if(appBtn){openApp(appBtn.dataset.app);return;}
+    const noteBtn=ev.target.closest('[data-note]');if(noteBtn){state.noteId=Number(noteBtn.dataset.note);render();return;}
+    const contactBtn=ev.target.closest('[data-contact]');if(contactBtn){state.contact=contactBtn.dataset.contact;render();return;}
+    const photoBtn=ev.target.closest('[data-photo]');if(photoBtn){state.currentPhoto=Number(photoBtn.dataset.photo);render();return;}
+    const calc=ev.target.closest('[data-calc]');if(calc){calcPress(calc.dataset.calc);return;}
+    const digit=ev.target.closest('[data-digit]');if(digit){if(state.dial.length<20)state.dial+=digit.dataset.digit;render();return;}
+    const wp=ev.target.closest('[data-wallpaper]');if(wp){state.wallpaper=wp.dataset.wallpaper;save();render();toast('Háttérkép beállítva!');return;}
+    const tog=ev.target.closest('[data-toggle]');if(tog){const key=tog.dataset.toggle;state[key]=!state[key];save();render();return;}
+    const action=ev.target.closest('[data-action]')?.dataset.action;
+    if(!action){if(state.locked && !state.control && ev.target.closest('#lockView')){state.locked=false;render();flashScreen('wake');}return;}
+    switch(action){
+      case 'home':goHome();break;
+      case 'flashlight':toast('Zseblámpa: vizuális demó');break;
+      case 'lock-camera':openApp('camera');break;
+      case 'new-note':createNote();break;
+      case 'notes-back':saveNote();state.noteId=null;render();break;
+      case 'delete-note':if(confirm('Biztosan törölni szeretnéd ezt a jegyzetet?')){state.notes=state.notes.filter(n=>n.id!==state.noteId);state.noteId=null;save();render();}break;
+      case 'chat-back':state.contact=null;render();break;
+      case 'photos-back':state.currentPhoto=null;render();break;
+      case 'delete-photo':if(state.currentPhoto>=1000 && confirm('Törlöd ezt a saját fotót?')){state.photos.splice(state.currentPhoto-1000,1);state.currentPhoto=null;save();render();}break;
+      case 'shutter':takePhoto();break;
+      case 'camera-retry':startCamera();break;
+      case 'open-photos':openApp('photos');break;
+      case 'sw-toggle':if(state.swRunning){state.swElapsed=getElapsed();state.swRunning=false;}else{state.swStart=Date.now();state.swRunning=true;}render();break;
+      case 'sw-reset':state.swElapsed=0;state.swStart=Date.now();render();break;
+      case 'erase-digit':state.dial=state.dial.slice(0,-1);render();break;
+      case 'call':if(state.dial){state.calling=true;render();}else toast('Előbb írj be egy számot!');break;
+      case 'hangup':state.calling=false;render();break;
+      case 'lock':lockPhone();break;
+      case 'clear-data':if(confirm('Törlöd a jegyzeteket, üzeneteket, saját fotókat és beállításokat?')){localStorage.removeItem(storageKey);location.reload();}break;
+      case 'control-close':state.control=false;render();break;
+      case 'music-play':if(state.musicPlaying){stopMusic();render();}else startMusic();break;
+      case 'music-next':case 'music-prev':state.musicTrack=(state.musicTrack+(action==='music-next'?1:tracks.length-1))%tracks.length;if(state.musicPlaying)startMusic();else render();break;
+    }
+  });
+  document.addEventListener('submit',(ev)=>{if(ev.target.id==='messageForm'){ev.preventDefault();sendMessage();}if(ev.target.id==='browserForm'){ev.preventDefault();browse($('#browserInput')?.value||'');}});
+  document.addEventListener('input',(ev)=>{
+    if(ev.target.id==='noteTitle'||ev.target.id==='noteBody')saveNote();
+    if(ev.target.id==='controlBrightness'||ev.target.id==='settingBrightness'){
+      state.brightness=Number(ev.target.value);save();setBrightness();
+    }
+  });
+  document.addEventListener('keydown',(ev)=>{
+    if(ev.key==='Escape'&&state.screenOn){if(state.control){state.control=false;render();}else if(state.app==='notes'&&state.noteId!==null){saveNote();state.noteId=null;render();}else if(state.app==='photos'&&state.currentPhoto!==null){state.currentPhoto=null;render();}else if(state.app==='messages'&&state.contact){state.contact=null;render();}else goHome();}
+    if((ev.key==='Enter'||ev.key===' ')&&ev.target.id==='lockView'){ev.preventDefault();state.locked=false;render();}
+    if(state.app==='calculator'&&!ev.target.matches('input,textarea')){const key=ev.key==='*'?'×':ev.key==='/'?'÷':ev.key==='-'?'−':ev.key==='.'?',':ev.key==='Enter'?'=':ev.key==='Backspace'?'AC':ev.key;if(/[0-9]/.test(key)&&key.length===1||['+','−','×','÷',',','=','AC'].includes(key)){ev.preventDefault();calcPress(key);}}
+  });
+  let startY=null;
+  screen.addEventListener('pointerdown',e=>{startY=e.clientY;});
+  screen.addEventListener('pointerup',e=>{if(startY===null)return;let d=e.clientY-startY;startY=null;if(state.locked&&state.screenOn&&!state.control&&d< -45){state.locked=false;render();flashScreen('wake');}else if(!state.locked&&state.screenOn&&d>80&&e.clientY<screen.getBoundingClientRect().top+150){state.control=true;render();}});
+  window.addEventListener('beforeunload',()=>{stopCamera();stopMusic();});
+
+  // Élethű, de nem kapcsolódik valódi eszközhöz: a fényerő képernyőszűrővel változik.
+  const dim=document.createElement('div');dim.id='brightnessDim';dim.setAttribute('aria-hidden','true');
+  Object.assign(dim.style,{position:'absolute',inset:'0',background:'#000',opacity:'var(--dim,0)',zIndex:'18',pointerEvents:'none',borderRadius:'51px'});
+  screen.insertBefore(dim,$('.island'));
+  setBrightness();render();setInterval(updateClock,100);
+})();
+
+</script>
+</head>
+<body>
+  <main class="workspace">
+    <section class="intro" aria-label="Bemutató">
+      <div class="eyebrow"><span class="live-dot"></span> INTERAKTÍV IPHONE DEMÓ</div>
+      <h1>A saját <span>iPhone-od.</span><br> Egy böngészőben.</h1>
+      <p>Oldd fel a képernyőt, nyisd meg az appokat, írj jegyzeteket, számolj, küldj demóüzeneteket, és készíts képeket. Minden egy szerkeszthető VS Code-projektben.</p>
+      <div class="feature-list">
+        <div><span class="feature-icon">✦</span> Feloldható kezdőképernyő</div>
+        <div><span class="feature-icon">✦</span> 11 használható alkalmazás</div>
+        <div><span class="feature-icon">✦</span> Automatikusan mentett jegyzetek</div>
+        <div><span class="feature-icon">✦</span> Személyre szabható kinézet</div>
+      </div>
+      <div class="desktop-hint"><kbd>ESC</kbd> = vissza a főképernyőre <span>·</span> Kattints a telefon gombjaira!</div>
+    </section>
+
+    <section class="phone-area" aria-label="Használható iPhone szimulátor">
+      <div class="phone-shadow"></div>
+      <div class="iphone" id="iphone">
+        <button class="hardware-button power" id="powerButton" aria-label="Bekapcsolás vagy zárolás" title="Bekapcsolás / zárolás"></button>
+        <button class="hardware-button volume-up" id="volumeUp" aria-label="Hangerő növelése" title="Hangerő +"></button>
+        <button class="hardware-button volume-down" id="volumeDown" aria-label="Hangerő csökkentése" title="Hangerő −"></button>
+        <div class="glass" id="screen">
+          <div class="wallpaper" id="wallpaper" aria-hidden="true">
+            <div class="wallpaper-glow glow-one"></div>
+            <div class="wallpaper-glow glow-two"></div>
+            <div class="wallpaper-glow glow-three"></div>
+          </div>
+          <div class="island" aria-hidden="true"><div class="island-lens"></div></div>
+          <div class="statusbar" id="statusbar">
+            <span id="statusTime">9:41</span>
+            <button class="status-icons" id="controlOpen" title="Vezérlőközpont" aria-label="Vezérlőközpont megnyitása">
+              <svg viewBox="0 0 24 18" width="19" height="16" aria-hidden="true"><path d="M1 14h3v4H1zM6 11h3v7H6zM11 7h3v11h-3zM16 3h3v15h-3z" fill="currentColor"/></svg>
+              <svg viewBox="0 0 24 18" width="19" height="16" aria-hidden="true"><path d="M1 6a16 16 0 0 1 22 0l-3 3a11.6 11.6 0 0 0-16 0zM6 11a9 9 0 0 1 12 0l-6 7z" fill="currentColor"/></svg>
+              <span class="battery"><span class="battery-fill"></span></span>
+            </button>
+          </div>
+          <div class="screen-view" id="view"></div>
+          <div class="toast" id="toast" role="status" aria-live="polite"></div>
+          <button class="home-indicator" id="homeButton" title="Főképernyő (Esc)" aria-label="Vissza a főképernyőre"><span></span></button>
+          <div class="off-screen hidden" id="offScreen"><div class="off-tap">Koppints a felébresztéshez</div></div>
+        </div>
+      </div>
+      <div class="under-phone"><span class="under-dot"></span> PRÓBÁLD KI ÉLŐBEN</div>
+    </section>
+  </main>
+</body>
+</html>
